@@ -56,11 +56,14 @@ export const metadata: Metadata = {
 };
 
 // --- Lazy Loading avec meilleur fallback SEO ---
-const FullCatalogue = dynamic(() => 
-    import('@/components/sections/FullCatalogue').then(mod => mod.FullCatalogue),
-  { /* ... options ... */ }
-);
- { 
+// SYNTAXE CORRECTE ET FINALE
+
+const FullCatalogue = dynamic(
+  // Premier argument : la fonction qui importe le composant
+  () => import('@/components/sections/FullCatalogue').then(mod => mod.FullCatalogue), 
+  
+  // Deuxième argument : l'objet d'options
+  { 
     ssr: false,
     loading: () => (
       <div className="text-center py-20">
@@ -74,7 +77,8 @@ const FullCatalogue = dynamic(() =>
       </div>
     )
   }
-);
+); // Une seule parenthèse fermante pour clore l'appel `dynamic`
+
 
 // --- Logique de Packs avec Structured Data ---
 const generatePack = (name: string, description: string, baseServiceId: string, addonIds: string[], popular: boolean) => {
