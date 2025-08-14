@@ -16,7 +16,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { ServiceDetailActions } from '@/components/services/ServiceDetailActions'; // <-- IMPORTATION
+import { ServiceDetailActions } from '@/components/services/ServiceDetailActions';
 
 // ============================================================================
 // 🧮 PARTIE 1: UTILS ET LOGIQUE CACHÉE
@@ -122,8 +122,88 @@ export async function generateMetadata({ params }: { params: { serviceId: string
 // ============================================================================
 
 const generateAdvancedStructuredData = (analytics: NonNullable<ReturnType<typeof getServiceAnalytics>>) => {
-  // ... (la fonction reste identique)
-  return JSON.stringify(/* ... */);
+  const { service, avgPrice, stats } = analytics;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://votre-site.com';
+  const serviceUrl = `${baseUrl}/service/${service.id}`;
+  const heroImage = getVerifiedImage(`/images/services/${service.id}-og.jpg`);
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": serviceUrl,
+        name: `${service.name} | Service ${service.subCategory}`,
+        description: service.description,
+        url: serviceUrl,
+        inLanguage: "fr-FR",
+        isPartOf: {
+          "@type": "WebSite",
+          "@id": `${baseUrl}/`,
+          name: "Votre Agence Web",
+          url: baseUrl
+        },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Accueil", item: baseUrl },
+            { "@type": "ListItem", position: 2, name: "Services", item: `${baseUrl}/services` },
+            { "@type": "ListItem", position: 3, name: service.subCategory, item: `${baseUrl}/services?filter=${service.subCategory}` },
+            { "@type": "ListItem", position: 4, name: service.name, item: serviceUrl }
+          ]
+        }
+      },
+      {
+        "@type": ["Service", "Product"],
+        "@id": `${serviceUrl}#service-product`,
+        name: service.name,
+        description: service.description,
+        image: heroImage,
+        url: serviceUrl,
+        sku: service.id,
+        brand: { "@type": "Brand", name: "Votre Agence Web" },
+        category: `Services ${service.subCategory}`,
+        serviceType: service.subCategory,
+        provider: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+        offers: {
+          "@type": "Offer",
+          price: service.price,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          seller: { "@id": `${baseUrl}/#organization` }
+        },
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: stats.avgRating,
+          reviewCount: stats.totalReviews
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        name: "Votre Agence Web",
+        url: baseUrl,
+        logo: `${baseUrl}/images/logo.png`,
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `Combien coûte ${service.name} ?`,
+            acceptedAnswer: { "@type": "Answer", text: `${service.name} coûte ${service.price}€. Le prix moyen pour cette catégorie est de ${avgPrice}€.` }
+          },
+          {
+            "@type": "Question",
+            name: `Quels sont les délais pour ${service.name} ?`,
+            acceptedAnswer: { "@type": "Answer", text: service.duration ? `Le développement prend ${service.duration}.` : `Les délais varient, contactez-nous.` }
+          }
+        ]
+      }
+    ]
+  };
+
+  return JSON.stringify(structuredData);
 };
 
 // ============================================================================
