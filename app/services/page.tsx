@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Check, Gift } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import CatalogueLoader from '@/components/sections/CatalogueLoader';
 import type { Metadata } from 'next';
 
 import { allServices } from '@/lib/services-data';
@@ -55,29 +55,6 @@ export const metadata: Metadata = {
   },
 };
 
-// --- Lazy Loading avec meilleur fallback SEO ---
-// SYNTAXE CORRECTE ET FINALE
-
-const FullCatalogue = dynamic(
-  // Premier argument : la fonction qui importe le composant
-  () => import('@/components/sections/FullCatalogue').then(mod => mod.FullCatalogue), 
-  
-  // Deuxième argument : l'objet d'options
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="text-center py-20">
-        <h3 className="text-xl font-semibold text-charcoal mb-4">
-          Catalogue Complet de Services
-        </h3>
-        <p className="text-charcoal/70 mb-2">
-          Chargement de +30 services : Développement, SEO, IA, Web3...
-        </p>
-        <div className="animate-pulse bg-rose-powder/20 h-4 w-48 mx-auto rounded"></div>
-      </div>
-    )
-  }
-); // Une seule parenthèse fermante pour clore l'appel `dynamic`
 
 
 // --- Logique de Packs avec Structured Data ---
@@ -311,7 +288,7 @@ export default function ServicesPage() {
               </p>
             </header>
             
-            <FullCatalogue />
+            <CatalogueLoader />
           </section>
 
         </div>
