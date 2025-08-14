@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Plus, Sparkles, Clock, Star } from 'lucide-react';
+import { Check, Plus, Clock, Star } from 'lucide-react';
 import { useCart } from '@/app/providers';
 import { toast } from 'sonner';
 
@@ -48,7 +48,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
 
   return (
     <Card 
-      className={`service-card relative transition-all duration-300 cursor-pointer ${
+      className={`service-card relative transition-all duration-300 cursor-pointer flex flex-col ${ // <-- MODIFICATION ICI
         isSelected ? 'ring-2 ring-magenta shadow-rose-lg' : 'hover:shadow-rose border-rose-powder/30'
       } ${service.category === 'addon' && !canAdd ? 'opacity-60' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
@@ -91,7 +91,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="py-4">
+      <CardContent className="py-4 flex-1"> {/* <-- MODIFICATION ICI */}
         <ul className="space-y-3">
           {service.features.map((feature, index) => (
             <li key={index} className="flex items-start space-x-3">
@@ -115,7 +115,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         )}
       </CardContent>
 
-      <CardFooter className="pt-4">
+      <CardFooter className="pt-4 mt-auto"> {/* <-- MODIFICATION ICI */}
         <Button
           onClick={handleToggleService}
           disabled={service.category === 'addon' && !canAdd}
