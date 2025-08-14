@@ -1,128 +1,131 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { Check, Search, Tag } from 'lucide-react';
+
+// On importe notre liste de services depuis son propre fichier
+import { allServices, Service } from '@/lib/services-data';
 import { ServiceCard } from '@/components/services/ServiceCard';
-import { PenTool, Code, Rocket } from 'lucide-react';
 
-// Définition des types pour les services
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: 'base' | 'addon';
-  features: string[];
-  duration?: string;
-  popular?: boolean;
-  dependencies?: string[];
-}
+// Définition des Packs
+const servicePacks = [
+    {
+        name: 'Pack Présence Digitale', price: 'Dès 1200€',
+        description: 'La solution idéale pour lancer votre activité en ligne avec une image professionnelle et percutante.',
+        features: ['Site Vitrine 5 Pages sur-mesure', 'Optimisation SEO de base', 'Design 100% responsive', 'Maintenance & Sécurité incluses (1 an)'],
+        cta: 'Choisir ce pack', popular: true,
+    },
+    {
+        name: 'Pack E-commerce Pro', price: 'Dès 3500€',
+        description: 'Lancez votre boutique en ligne et commencez à vendre avec des outils puissants pour la croissance.',
+        features: ['Boutique en ligne complète', 'Paiements sécurisés intégrés', 'Gestion d\'inventaire intelligente (IA)', 'Module de parrainage & fidélité'],
+        cta: 'Choisir ce pack', popular: false,
+    },
+];
 
-// Liste COMPLÈTE et mise à jour des services
-const allServices: Service[] = [
-  // --- SERVICES DE BASE ---
-  {
-    id: 'site-vitrine',
-    name: 'Site Vitrine 5 Pages',
-    description: 'Site web professionnel avec design sur-mesure, responsive et optimisé SEO. Inclut les pages essentielles pour votre présence en ligne.',
-    price: 1200,
-    category: 'base',
-    popular: true,
-    duration: '7-10 jours',
-    features: ['Design responsive', 'Optimisation SEO', '5 pages incluses', 'Formulaire de contact', 'Analytics intégré'],
-  },
-  {
-    id: 'landing-page',
-    name: 'Landing Page',
-    description: 'Page de conversion haute performance avec design accrocheur et call-to-actions optimisés pour maximiser vos conversions.',
-    price: 600,
-    category: 'base',
-    duration: '3-5 jours',
-    features: ['Design conversion-focused', 'A/B testing ready', 'Intégration analytics', 'Optimisation mobile', 'Temps de chargement < 2s'],
-  },
-  {
-    id: 'site-ecommerce',
-    name: 'Boutique en Ligne Performante',
-    description: 'Vendez vos produits avec une boutique en ligne complète, sécurisée et facile à gérer pour vous et vos clients.',
-    price: 2500,
-    category: 'base',
-    duration: '4-6 semaines',
-    features: ['Catalogue produits illimité', 'Paiement sécurisé (Stripe, PayPal)', 'Gestion des commandes', 'Comptes clients'],
-  },
-  // --- ADD-ONS & OPTIONS ---
-  {
-    id: 'blog',
-    name: 'Blog Markdown',
-    description: 'Système de blog intégré avec support Markdown, catégories, tags et RSS. Parfait pour votre content marketing.',
-    price: 400,
-    category: 'addon',
-    dependencies: ['site-vitrine', 'site-ecommerce'],
-    features: ['Éditeur Markdown', 'Système de catégories', 'Flux RSS', 'Commentaires', 'Partage social'],
-  },
-  {
-    id: 'seo-avance',
-    name: 'SEO Avancé',
-    description: 'Optimisation SEO complète avec schema markup, sitemap, meta tags dynamiques et analyse de performance.',
-    price: 300,
-    category: 'addon',
-    dependencies: ['site-vitrine', 'landing-page', 'site-ecommerce'],
-    features: ['Schema markup', 'Sitemap XML', 'Meta tags dynamiques', 'Open Graph', 'Audit SEO'],
-  },
-  {
-    id: 'connexion-web3',
-    name: 'Connexion Wallet Web3',
-    description: 'Intégration Web3 avec connexion wallet (MetaMask, WalletConnect), gestion des NFTs et interactions blockchain.',
-    price: 800,
-    category: 'addon',
-    dependencies: ['site-vitrine', 'landing-page', 'site-ecommerce'],
-    features: ['Multi-wallet support', 'Gestion NFT', 'Smart contracts', 'Transaction history', 'Web3 auth'],
-  },
-  {
-    id: 'internationalisation',
-    name: 'Internationalisation',
-    description: 'Support multi-langues avec détection automatique, traductions dynamiques et gestion des contenus localisés.',
-    price: 500,
-    category: 'addon',
-    dependencies: ['site-vitrine', 'site-ecommerce'],
-    features: ['Support multi-langues', 'Détection automatique', 'URLs localisées', 'Contenus traduits', 'Fallback intelligent'],
-  },
-  {
-    id: 'maintenance-annuelle',
-    name: 'Maintenance & Sérénité',
-    description: 'Gardez votre site à jour, sécurisé et performant sans avoir à vous en soucier. Mises à jour, sauvegardes et support.',
-    price: 450,
-    category: 'addon',
-    dependencies: ['site-vitrine', 'landing-page', 'site-ecommerce'],
-    features: ['Mises à jour techniques', 'Sauvegardes mensuelles', 'Rapport de performance', 'Support prioritaire'],
-  },
+// Définition des catégories pour les filtres
+const serviceCategories = [
+    { id: 'tous', name: 'Tous' }, { id: 'visibilite', name: 'Visibilité' }, { id: 'conversion', name: 'Conversion' },
+    { id: 'vente', name: 'Vente' }, { id: 'optimisation', name: 'Optimisation' }, { id: 'growth', name: 'Croissance' },
+    { id: 'plateforme', name: 'Plateformes' }, { id: 'innovation', name: 'Innovation' },
 ];
 
 export default function ServicesPage() {
-  const baseServices = allServices.filter(s => s.category === 'base');
-  const addonServices = allServices.filter(s => s.category === 'addon');
+  const [activeFilter, setActiveFilter] = useState('tous');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredServices = useMemo(() => {
+    let services = allServices;
+    if (activeFilter !== 'tous') {
+      services = services.filter(s => s.subCategory === activeFilter);
+    }
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      services = services.filter(s => 
+        s.name.toLowerCase().includes(lowerCaseQuery) || 
+        s.description.toLowerCase().includes(lowerCaseQuery)
+      );
+    }
+    return services;
+  }, [activeFilter, searchQuery]);
 
   return (
     <div className="bg-cream py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-playfair font-bold tracking-tight text-charcoal sm:text-4xl">
-            Découvrez nos services sur-mesure
+            
+        {/* --- SECTION 1 : LES PACKS --- */}
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-playfair font-bold tracking-tight text-charcoal sm:text-5xl">
+            Commencez avec une Solution Complète
           </h2>
           <p className="mt-6 text-lg leading-8 text-charcoal/80">
-            Chaque projet est unique. Choisissez une base solide et complétez-la avec les options qui correspondent parfaitement à vos ambitions.
+            Nos packs sont conçus pour répondre à vos objectifs principaux. La voie rapide vers le succès.
           </p>
         </div>
+        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 max-w-4xl mx-auto">
+          {servicePacks.map((pack) => (
+            <div key={pack.name} className={`rounded-2xl p-8 flex flex-col border ${pack.popular ? 'bg-charcoal text-white border-magenta ring-2 ring-magenta' : 'bg-white text-charcoal border-rose-powder/30'}`}>
+              {pack.popular && <div className="text-center mb-4"><span className="bg-magenta text-white text-xs font-semibold px-3 py-1 rounded-full">LE PLUS POPULAIRE</span></div>}
+              <h3 className="font-playfair text-2xl font-bold">{pack.name}</h3>
+              <p className={`mt-4 text-lg font-semibold ${pack.popular ? 'text-rose-powder' : 'text-magenta'}`}>{pack.price}</p>
+              <p className={`mt-4 flex-1 ${pack.popular ? 'text-cream/80' : 'text-charcoal/80'}`}>{pack.description}</p>
+              <ul className="mt-8 space-y-3">
+                {pack.features.map((feature) => (<li key={feature} className="flex items-start"><Check className={`w-5 h-5 mr-3 mt-1 flex-shrink-0 ${pack.popular ? 'text-green-400' : 'text-green-600'}`} /><span>{feature}</span></li>))}
+              </ul>
+              <Link href="/contact" className={`mt-10 block w-full text-center rounded-lg px-6 py-3 text-lg font-semibold transition-opacity ${pack.popular ? 'bg-white text-charcoal hover:opacity-90' : 'bg-gradient-rose text-white hover:opacity-90 shadow-rose'}`}>{pack.cta}</Link>
+            </div>
+          ))}
+        </div>
 
-        <div className="mt-20 max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl font-playfair font-bold text-charcoal">Notre Processus Simplifié</h3>
-            <p className="mt-4 text-lg text-charcoal/80">De l'idée au lancement, nous suivons 3 étapes claires pour garantir un résultat qui vous ressemble.</p>
+        {/* --- SECTION 2 : LE CATALOGUE COMPLET --- */}
+        <div className="mt-24 pt-20 border-t border-rose-powder/20">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-playfair font-bold tracking-tight text-charcoal sm:text-5xl">
+              Ou Construisez sur Mesure
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-charcoal/80">
+              Explorez notre catalogue complet de services pour créer la solution unique qui correspond parfaitement à votre vision.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="flex flex-col items-center"><div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4"><PenTool className="w-8 h-8 text-magenta" /></div><h4 className="text-lg font-playfair font-bold text-charcoal">1. Conception & Stratégie</h4><p className="mt-2 text-charcoal/70">Nous discutons de votre vision pour définir un design unique et une stratégie digitale efficace.</p></div>
-            <div className="flex flex-col items-center"><div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4"><Code className="w-8 h-8 text-magenta" /></div><h4 className="text-lg font-playfair font-bold text-charcoal">2. Développement & Création</h4><p className="mt-2 text-charcoal/70">Votre projet prend vie avec un code propre, performant et des technologies modernes.</p></div>
-            <div className="flex flex-col items-center"><div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4"><Rocket className="w-8 h-8 text-magenta" /></div><h4 className="text-lg font-playfair font-bold text-charcoal">3. Lancement & Suivi</h4><p className="mt-2 text-charcoal/70">Nous déployons votre solution et restons à vos côtés pour assurer son succès continu.</p></div>
+
+          {/* Filtres et Recherche */}
+          <div className="mt-16 sticky top-16 bg-cream/80 backdrop-blur-md py-4 z-10 flex flex-col md:flex-row gap-4 items-center justify-center">
+              <div className="relative w-full md:w-1/3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/40 w-5 h-5" />
+                  <input 
+                      type="text"
+                      placeholder="Rechercher un service..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-rose-powder/30 rounded-full bg-white focus:ring-2 focus:ring-magenta"
+                  />
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                  {serviceCategories.map(category => (
+                      <button key={category.id} onClick={() => setActiveFilter(category.id)} className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${activeFilter === category.id ? 'bg-magenta text-white' : 'bg-white text-charcoal hover:bg-rose-powder/20'}`}>
+                          {category.name}
+                      </button>
+                  ))}
+              </div>
+          </div>
+
+          {/* Grille des services */}
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {filteredServices.length > 0 ? (
+              filteredServices.map(service => (
+                <ServiceCard key={service.id} service={service} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16">
+                <Tag className="w-12 h-12 mx-auto text-charcoal/30" />
+                <h3 className="mt-4 text-lg font-medium text-charcoal">Aucun service ne correspond à votre recherche</h3>
+                <p className="mt-1 text-sm text-charcoal/60">Essayez d'autres mots-clés ou un autre filtre.</p>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="mt-20"><h3 className="text-2xl font-playfair font-bold text-charcoal mb-8 text-center">1. Choisissez votre fondation</h3><div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">{baseServices.map(service => (<ServiceCard key={service.id} service={service} />))}</div></div>
-        <div className="mt-20"><h3 className="text-2xl font-playfair font-bold text-charcoal mb-8 text-center">2. Agrémentez avec nos options</h3><div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">{addonServices.map(service => (<ServiceCard key={service.id} service={service} />))}</div></div>
       </div>
     </div>
   );
