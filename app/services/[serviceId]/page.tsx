@@ -5,7 +5,8 @@ import { Suspense, cache } from 'react';
 import { allServices, type Service } from '@/lib/services-data';
 import { 
   Check, Clock, Users, BarChart, ArrowRight, Star, Shield, Zap, Globe, 
-  Phone, Mail, Download, Play, ExternalLink, ChevronRight, Trophy, Target, Layers
+  Phone, Mail, Download, Play, ExternalLink, ChevronRight, Trophy, Target, Layers,
+  ShoppingCart // Ajout de l'import manquant
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -162,7 +163,7 @@ export async function generateMetadata({ params }: { params: { serviceId: string
       ],
       locale: 'fr_FR',
       type: 'website',
-      tags: seoKeywords,
+      // Suppression de la ligne tags: seoKeywords qui causait l'erreur
     },
     twitter: {
       card: 'summary_large_image',
