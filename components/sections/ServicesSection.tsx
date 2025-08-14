@@ -1,67 +1,20 @@
+// Fichier: components/sections/ServicesSection.tsx
+// Version Corrigée qui utilise la source de données centrale et unique
+
 'use client';
 
-import { ServiceCard } from '@/components/services/ServiceCard';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles } from 'lucide-react';
+import { ServiceCard } from '@/components/services/ServiceCard';
+import { allServices } from '@/lib/services-data'; // <-- On importe la liste complète
 import Link from 'next/link';
+import { ArrowRight, Sparkles, Plus } from 'lucide-react';
 
-const services = [
-  {
-    id: 'site-vitrine',
-    name: 'Site Vitrine 5 Pages',
-    description: 'Site web professionnel avec design sur-mesure, responsive et optimisé SEO. Inclut les pages essentielles pour votre présence en ligne.',
-    price: 1200,
-    category: 'base' as const,
-    features: ['Design responsive', 'Optimisation SEO', '5 pages incluses', 'Formulaire de contact', 'Analytics intégré'],
-    duration: '7-10 jours',
-    popular: true,
-  },
-  {
-    id: 'landing-page',
-    name: 'Landing Page',
-    description: 'Page de conversion haute performance avec design accrocheur et call-to-actions optimisés pour maximiser vos conversions.',
-    price: 600,
-    category: 'base' as const,
-    features: ['Design conversion-focused', 'A/B testing ready', 'Intégration analytics', 'Optimisation mobile', 'Temps de chargement < 2s'],
-    duration: '3-5 jours',
-  },
-  {
-    id: 'blog-addon',
-    name: '+ Blog Markdown',
-    description: 'Système de blog intégré avec support Markdown, catégories, tags et RSS. Parfait pour votre content marketing.',
-    price: 400,
-    category: 'addon' as const,
-    features: ['Éditeur Markdown', 'Système de catégories', 'Flux RSS', 'Commentaires', 'Partage social'],
-    dependencies: ['site-vitrine'],
-  },
-  {
-    id: 'seo-advanced',
-    name: '+ SEO Avancé',
-    description: 'Optimisation SEO complète avec schema markup, sitemap, meta tags dynamiques et analyse de performance.',
-    price: 300,
-    category: 'addon' as const,
-    features: ['Schema markup', 'Sitemap XML', 'Meta tags dynamiques', 'Open Graph', 'Audit SEO'],
-    dependencies: ['site-vitrine', 'landing-page'],
-  },
-  {
-    id: 'web3-wallet',
-    name: '+ Connexion Wallet Web3',
-    description: 'Intégration Web3 avec connexion wallet (MetaMask, WalletConnect), gestion des NFTs et interactions blockchain.',
-    price: 800,
-    category: 'addon' as const,
-    features: ['Multi-wallet support', 'Gestion NFT', 'Smart contracts', 'Transaction history', 'Web3 auth'],
-    dependencies: ['site-vitrine', 'landing-page'],
-  },
-  {
-    id: 'i18n',
-    name: '+ Internationalisation',
-    description: 'Support multi-langues avec détection automatique, traductions dynamiques et gestion des contenus localisés.',
-    price: 500,
-    category: 'addon' as const,
-    features: ['Support multi-langues', 'Détection automatique', 'URLs localisées', 'Contenus traduits', 'Fallback intelligent'],
-    dependencies: ['site-vitrine'],
-  },
-];
+// On sélectionne intelligemment quelques services à mettre en avant sur la page d'accueil.
+// Ici, on prend les services marqués comme "populaires", ou les 3 premiers services de base si aucun n'est populaire.
+let featuredServices = allServices.filter(s => s.popular);
+if (featuredServices.length === 0) {
+  featuredServices = allServices.filter(s => s.category === 'base').slice(0, 3);
+}
 
 export function ServicesSection() {
   return (
@@ -78,19 +31,30 @@ export function ServicesSection() {
             <span className="text-gradient block">Projet Parfait</span>
           </h2>
           <p className="text-xl text-charcoal/70 leading-relaxed">
-            Commencez par un service de base et ajoutez les options qui correspondent à vos besoins. 
+            Commencez par une base solide et ajoutez les options qui correspondent à vos besoins. 
             Chaque projet est unique, comme vous.
           </p>
         </div>
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
+          {/* On affiche les services sélectionnés */}
+          {featuredServices.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>
 
-        {/* Custom Service CTA */}
+        {/* Bouton pour voir le catalogue complet */}
+        <div className="mt-16 text-center">
+            <Button asChild size="lg" className="bg-gradient-rose text-white shadow-rose text-lg">
+                <Link href="/services">
+                    Voir tous nos services ({allServices.length})
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+            </Button>
+        </div>
+
+        {/* Custom Service CTA (votre section personnalisée) */}
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-r from-rose-powder/20 to-magenta/10 rounded-2xl p-8 max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-4">
