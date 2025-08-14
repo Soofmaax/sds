@@ -1,4 +1,5 @@
 import { ServiceCard } from '@/components/services/ServiceCard';
+import { PenTool, Code, Rocket } from 'lucide-react'; // <-- AJOUT des icônes
 
 // Définition des types pour la clarté
 interface Service {
@@ -15,7 +16,7 @@ interface Service {
 
 // Liste des services proposés
 const allServices: Service[] = [
-  {
+    {
     id: 'site-vitrine',
     name: 'Site Vitrine Glamour',
     description: 'Une présence en ligne élégante et professionnelle pour présenter votre activité, vos valeurs et attirer vos clients idéaux.',
@@ -79,8 +80,53 @@ export default function ServicesPage() {
           </p>
         </div>
 
+        {/* --- NOUVELLE SECTION "NOTRE PROCESSUS" --- */}
+        <div className="mt-20 max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl font-playfair font-bold text-charcoal">
+              Notre Processus Simplifié
+            </h3>
+            <p className="mt-4 text-lg text-charcoal/80">
+              De l'idée au lancement, nous suivons 3 étapes claires pour garantir un résultat qui vous ressemble.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            {/* Étape 1 */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4">
+                <PenTool className="w-8 h-8 text-magenta" />
+              </div>
+              <h4 className="text-lg font-playfair font-bold text-charcoal">1. Conception & Stratégie</h4>
+              <p className="mt-2 text-charcoal/70">
+                Nous discutons de votre vision pour définir un design unique et une stratégie digitale efficace.
+              </p>
+            </div>
+            {/* Étape 2 */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4">
+                <Code className="w-8 h-8 text-magenta" />
+              </div>
+              <h4 className="text-lg font-playfair font-bold text-charcoal">2. Développement & Création</h4>
+              <p className="mt-2 text-charcoal/70">
+                Votre projet prend vie avec un code propre, performant et des technologies modernes.
+              </p>
+            </div>
+            {/* Étape 3 */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-rose-powder/20 mb-4">
+                <Rocket className="w-8 h-8 text-magenta" />
+              </div>
+              <h4 className="text-lg font-playfair font-bold text-charcoal">3. Lancement & Suivi</h4>
+              <p className="mt-2 text-charcoal/70">
+                Nous déployons votre solution et restons à vos côtés pour assurer son succès continu.
+              </p>
+            </div>
+          </div>
+        </div>
+        {/* --- FIN DE LA NOUVELLE SECTION --- */}
+
         {/* Services de Base */}
-        <div className="mt-16">
+        <div className="mt-20"> {/* Marge ajustée pour plus d'espace */}
           <h3 className="text-2xl font-playfair font-bold text-charcoal mb-8 text-center">
             1. Choisissez votre fondation
           </h3>
