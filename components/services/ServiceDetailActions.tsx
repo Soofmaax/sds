@@ -23,7 +23,8 @@ export function ServiceDetailActions({ service }: ServiceDetailActionsProps) {
       removeService(service.id);
       toast.error(`${service.name} retiré du panier.`);
     } else {
-      addService(service);
+      addService({ ...service, isSelected: true });
+
       toast.success(`${service.name} ajouté au panier !`);
     }
   };
