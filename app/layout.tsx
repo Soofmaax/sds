@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Playfair_Display, Montserrat } from 'next/font/google';
 import { Providers } from './providers';
 import { Toaster } from 'sonner';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 const playfair = Playfair_Display({ 
   subsets: ['latin'],
@@ -38,8 +40,17 @@ export default function RootLayout({
       </head>
       <body className="bg-cream text-charcoal font-montserrat">
         <Providers>
-          {children}
+          
+          <Header />
+          
+          <main className="pt-16">
+            {children}
+          </main>
+          
+          <Footer />
+          
           <Toaster position="top-right" />
+
         </Providers>
       </body>
     </html>
