@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 
 // --- Lazy Loading avec meilleur fallback SEO ---
 const FullCatalogue = dynamic(() => 
-  import('@/components/sections/FullCatalogue').then(mod => mod.FullCatalogue),
+    import('@/components/sections/FullCatalogue'),
   { 
     ssr: false,
     loading: () => (
