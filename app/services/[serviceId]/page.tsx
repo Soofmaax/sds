@@ -6,7 +6,7 @@ import { allServices, type Service } from '@/lib/services-data';
 import { 
   Check, Clock, Users, BarChart, ArrowRight, Star, Shield, Zap, Globe, 
   Phone, Mail, Download, Play, ExternalLink, ChevronRight, Trophy, Target, Layers,
-  ShoppingCart // Ajout de l'import manquant
+  ShoppingCart
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,7 +163,7 @@ export async function generateMetadata({ params }: { params: { serviceId: string
       ],
       locale: 'fr_FR',
       type: 'website',
-      // Suppression de la ligne tags: seoKeywords qui causait l'erreur
+      // tags: seoKeywords, // Supprimé car cause une erreur
     },
     twitter: {
       card: 'summary_large_image',
@@ -517,7 +517,7 @@ export default function ServiceDetailPage({ params }: { params: { serviceId: str
               <header className="text-center lg:text-left">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-8">
                   
-                  {/* Image hero vérifiée */}
+                  {/* Image hero vérifiée - Correction: suppression du onError */}
                   <div className="relative w-full lg:w-80 aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-rose-powder/20 to-magenta/10 shadow-lg">
                     <Image
                       src={heroImage}
@@ -527,10 +527,6 @@ export default function ServiceDetailPage({ params }: { params: { serviceId: str
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 320px"
                       itemProp="image"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/images/services/default-service.jpg';
-                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent"></div>
                     {service.popular && (
