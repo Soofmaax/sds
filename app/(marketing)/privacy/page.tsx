@@ -2,7 +2,7 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ... } from '@/lib/constants/privacy';
+import { content } from '@/lib/constants/privacy';
 
 // Les métadonnées peuvent aussi être générées dynamiquement à partir du contenu
 export const metadata: Metadata = {
