@@ -16,7 +16,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { ServiceDetailActions } from '@/components/services/ServiceDetailActions';
+import { ServiceActions } from '@/components/services/ServiceActions';
 
 // ============================================================================
 // 🧮 PARTIE 1: UTILS ET LOGIQUE CACHÉE
